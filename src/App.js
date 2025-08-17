@@ -1,24 +1,28 @@
-import logo from './logo.svg';
+
 import './App.css';
+import Header from './components/Header';
+import EventGrid from './components/EventGrid';
+import EventDetails from './components/EventDetails';
+import BookingForm from './components/BookingForm';
+import LogIn from './components/LogIn';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Header />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<EventGrid />} />
+            <Route path="/events" element={<EventGrid />} />
+            <Route path="/event-details" element={<EventDetails />} />
+            <Route path="/booking" element={<BookingForm />} />
+            <Route path="/login" element={<LogIn />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 

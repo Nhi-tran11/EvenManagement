@@ -5,6 +5,7 @@ import EventGrid from './components/EventGrid';
 import EventDetails from './components/EventDetails';
 import BookingForm from './components/BookingForm';
 import LogIn from './components/LogIn';
+import SignUp from './components/SignUp';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/event-details" element={<EventDetails />} />
             <Route path="/booking" element={<BookingForm />} />
             <Route path="/login" element={<LogIn />} />
+            <Route path="/signup" element={<SignUp />} />
           </Routes>
         </main>
       </div>

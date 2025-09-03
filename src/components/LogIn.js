@@ -4,6 +4,11 @@ import './LogIn.css';
 
 function LogIn() {
     const navigate = useNavigate();
+    const handleSubmit =(e) =>{
+        e.preventDefault();
+        navigate('/');
+
+    }
 
     return (
         <div className="login-container">
@@ -48,7 +53,7 @@ function LogIn() {
                         </label>
                     </div>
                     
-                    <button type="submit" className="btn-primary">
+                    <button type="submit" onClick={handleSubmit} className="btn-primary">
                         Sign In
                     </button>
                     

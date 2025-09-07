@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import EventCard from './EventCard';
 import './EventGrid.css';
@@ -105,6 +104,7 @@ const EventGrid = () => {
           <button className="filter-pill">Technology</button>
           <button className="filter-pill">Art</button>
           <button className="filter-pill">Fitness</button>
+          <button className="filter-pill" onClick={() => navigate('/create-event')}>Create your own event</button>
         </div>
       </div>
 

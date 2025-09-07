@@ -7,7 +7,8 @@ import BookingForm from './components/BookingForm';
 import LogIn from './components/LogIn';
 import SignUp from './components/SignUp';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import CreateEvent from './components/CreateEvent';
+import MyBookings from './components/BookingForm';
 function App() {
   return (
     <BrowserRouter>
@@ -21,6 +22,8 @@ function App() {
             <Route path="/booking" element={<BookingForm />} />
             <Route path="/login" element={<LogIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/create-event" element={<CreateEvent />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
           </Routes>
         </main>
       </div>

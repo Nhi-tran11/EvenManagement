@@ -1,6 +1,5 @@
 import React, { use } from 'react';
 import './Header.css';
-import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -27,7 +26,7 @@ function Header ({ onLogoClick })  {
         <nav className="nav-menu">
           <button className="nav-btn active">Events</button>
           <button className="nav-btn">Categories</button>
-          <button className="nav-btn">My Bookings</button>
+          <button className="nav-btn" onClick={() => navigate('/my-bookings')}>My Bookings</button>
         </nav>
         <div className="header-actions">
           <button className="search-btn">🔍</button>

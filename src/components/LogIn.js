@@ -29,10 +29,10 @@ function LogIn() {
             const data = await responseData.json();
             console.log('Response data', data);
             if (responseData.ok) {
-                // Handle successful signup
+                // Handle successful login
             navigate('/');
             } else {
-                setError(data.message || 'Registration failed');
+                setError(data.message || 'Login failed');
             }
         } catch (err) {
             console.error('Error:', err);

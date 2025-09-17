@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import {  useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CreateEvent.css';
-
+import { useEffect } from 'react';
 const CreateEvent = () => {
   const navigate = useNavigate();
+  const [current_user, setCurrentUser] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
  const [alertMessage, setAlertMessage] = useState('');
+ const [error, setError] = useState('');
 const [imageUrl, setImageUrl] = useState('');
   const [formData, setFormData] = useState({
     title: '',
@@ -18,6 +20,7 @@ const [imageUrl, setImageUrl] = useState('');
     attendees: '',
     organizer: '',
     image: null,
+    quantity: 0,
     // createdBy: createdBy
   });
 
@@ -40,6 +43,33 @@ const [imageUrl, setImageUrl] = useState('');
     // Navigate back to event details
     navigate('/');
   };
+useEffect(() => {
+  const fetchCurrentUser = async () => {
+    try {
+      const createdByData = await fetch('http://localhost:8080/current_user', {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('Created by response:', createdByData);
+      
+      if (createdByData.ok) {
+        const userData = await createdByData.json();
+        setCurrentUser(userData);
+      } else {
+        // User not authenticated
+        setCurrentUser({ role: null });
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      setCurrentUser({ role: null });
+    }
+  };
+
+  fetchCurrentUser();
+}, []);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -47,18 +77,16 @@ const [imageUrl, setImageUrl] = useState('');
 
     setIsSubmitting(true);
     try {
-       const createdByData = await fetch('http://localhost:8080/current_user', {
-    credentials: 'include',
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
+
+        if(formData.title === '' || formData.date === '' || formData.time === '' || formData.location === '' || formData.price === '' || formData.category === '' || formData.description === '' || formData.attendees === '' ) {
+    setError('Please fill in all required fields and select at least one ticket.');
+    setIsSubmitting(false);
+    return;
+  }
     const formDataToSend = new FormData();
   formDataToSend.append("file", formData.image); // key must match @RequestParam("file")
 
-  console.log('Created by response:', createdByData);
-  const current_user = await createdByData.json();
+ 
   const imageFile= await fetch('http://localhost:8080/upload', {
     credentials: 'include',
     method: 'POST',
@@ -99,6 +127,7 @@ const [imageUrl, setImageUrl] = useState('');
 
   return (
     <div className="booking-form-container">
+      {error && <div className="error-message">{error}</div>}
       <div className="booking-header">
         <button className="back-btn" onClick={handleBackClick}>
           ← Back to Event
@@ -117,11 +146,16 @@ const [imageUrl, setImageUrl] = useState('');
                 <span>📅 {new Date(formData.date).toLocaleDateString()}</span>
                 <span>🕐 {formData.time}</span>
                 <span>📍 {formData.location}</span>
-                <span>🎫 ${formData.ticketPrice} per ticket</span>
+                <span>🎫 ${formData.price} per ticket</span>
                 <span>👥 {formData.attendees} tickets available</span>
                 <span>📝 {formData.description}</span>
               </div>
             </div>
+          </div>
+        )}
+        {current_user && current_user.role === null && (
+          <div className="role-warning">
+            <p>Please <button className="login-link" onClick={() => navigate('/login')}>log in</button> to create events.</p>
           </div>
         )}
         {(isSubmitting || alertMessage !== '🎉 Event created successfully!') && (
@@ -211,7 +245,8 @@ const [imageUrl, setImageUrl] = useState('');
                   <option value="music">Music</option>
                   <option value="art">Art</option>
                   <option value="technology">Technology</option>
-                  <option value="sports">Sports</option>
+                  <option value="sports">Fitness</option>
+                  <option value="food">Food</option>
                   <option value="others">Others</option>
                 </select>
               </div>
@@ -254,25 +289,36 @@ const [imageUrl, setImageUrl] = useState('');
           <div className="event-breakdown">
             <h3>Ticket Price and The number of Tickets</h3>
                  <div className="form-group">
-                  <label htmlFor="ticketPrice">Ticket price *</label>
+                  <label htmlFor="price">Ticket price *</label>
                   <input
-                    type="text"
-                    id="ticketPrice"
-                  name="ticketPrice"
-                  value={formData.ticketPrice}
+                    type="number"
+                    id="price"
+                  name="price"
+                  value={formData.price}
                   onChange={handleInputChange}
                   placeholder="Enter the ticket price"
                 />
               </div>
                 <div className="form-group">
-                  <label htmlFor="attendees">Number of Tickets *</label>
+                  <label htmlFor="quantity">Number of Tickets *</label>
+                  <input
+                    type="number"
+                    id="quantity"
+                  name="quantity"
+                  value={formData.quantity}
+                  onChange={handleInputChange}
+                  placeholder="Enter number of tickets"
+                />
+              </div>
+              <div className="form-group">
+                  <label htmlFor="attendees">Number of Attendees *</label>
                   <input
                     type="number"
                     id="attendees"
                   name="attendees"
                   value={formData.attendees}
                   onChange={handleInputChange}
-                  placeholder="Enter number of tickets"
+                  placeholder="Enter number of attendees"
                 />
               </div>
          

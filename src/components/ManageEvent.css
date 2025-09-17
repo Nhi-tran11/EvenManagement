@@ -44,28 +44,6 @@
   padding: 15px;
 }
 
-.category-tag {
-  background: #ff6b6b;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.price-tag {
-  background: rgba(255, 255, 255, 0.95);
-  color: #333;
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  backdrop-filter: blur(10px);
-}
 
 .card-content {
   padding: 20px;
@@ -103,7 +81,8 @@
   font-size: 16px;
   width: 20px;
 }
-
+.booking-info,
+.booked-btn,
 .event-description {
   font-size: 14px;
   color: #777;
@@ -116,30 +95,6 @@
   overflow: hidden;
 }
 
-.card-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.sold-out-btn,
-.book-btn {
-  background: linear-gradient(135deg, #ffeb3b, #ffc107);
-  border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-weight: 600;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-.sold-out-btn,
-.book-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
-}
 
 .card-stats {
   display: flex;
@@ -148,16 +103,6 @@
   color: #999;
 }
 
-.likes, .shares {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: color 0.3s ease;
-}
-
-.likes:hover, .shares:hover {
-  color: #555;
-}
 
 @media (max-width: 768px) {
   .card-content {

@@ -10,6 +10,7 @@ const EventDetails = () => {
     // Get the selected event from localStorage
     const selectedEvent = localStorage.getItem('selectedEvent');
     if (selectedEvent) {
+      console.log('Selected event data:', selectedEvent);
       setEvent(JSON.parse(selectedEvent));
     } else {
       // If no event is selected, redirect to home
@@ -24,7 +25,9 @@ const EventDetails = () => {
 
   const handleBackClick = () => {
     // Navigate back to events grid
+    localStorage.removeItem('selectedEvent');
     navigate('/');
+    
   };
 
   if (!event) return null;
@@ -48,7 +51,7 @@ const EventDetails = () => {
       'Fitness': '#54a0ff',
       'Entertainment': '#5f27cd'
     };
-    return colors[category] || '#ddd';
+    return colors[category];
   };
 
   return (
@@ -61,7 +64,7 @@ const EventDetails = () => {
 
       <div className="event-hero">
         <div className="hero-image-container">
-          <img src={event.image} alt={event.title} className="hero-image" />
+          <img src={event.imageUrl} alt={event.title} className="hero-image" />
           <div className="hero-overlay">
             <span className="hero-category" style={{backgroundColor: getCategoryColor(event.category)}}>
               {event.category}
@@ -159,10 +162,15 @@ const EventDetails = () => {
               <span className="price">${event.price}</span>
               <span className="price-label">per person</span>
             </div>
-            
+            {event && event.quantity === 0 && (
+              <div className="sold-out-banner">
+                This event is currently sold out.
+              </div>
+            )}
+            {event.quantity>0 && (
             <button className="book-now-btn" onClick={handleBookClick}>
               Book Your Spot Now
-            </button>
+            </button>)}
             
             <div className="booking-features">
               <div className="feature">✅ Instant Confirmation</div>

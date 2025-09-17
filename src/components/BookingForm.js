@@ -5,26 +5,55 @@ import './BookingForm.css';
 const BookingForm = () => {
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
+   const selectedEvent = localStorage.getItem('selectedEvent');
+   const [current_user, setCurrentUser] = useState(null);
+   const [error, setError] = useState(null);
+      
+    const ticketQuantity=JSON.parse(selectedEvent).quantity;
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
-    phone: '',
-    tickets: 1,
-    specialRequests: ''
+    phoneNumber: '',
+    ticketsBooked: 0,
+    specialRequest: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/current_user', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setCurrentUser(data);
+          setFormData(prev => ({
+            ...prev,
+            email: data.email || '',
+          }));
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      setError(error.message);
+    }
+
+  }; fetchCurrentUser();
+}, []);
 
   useEffect(() => {
-    // Get the selected event from localStorage
-    const selectedEvent = localStorage.getItem('selectedEvent');
+  
     if (selectedEvent) {
       setEvent(JSON.parse(selectedEvent));
     } else {
       // If no event is selected, redirect to home
+      
       navigate('/');
     }
-  }, [navigate]);
+  }, [selectedEvent]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,15 +66,43 @@ const BookingForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate booking process
-    setTimeout(() => {
-      setIsSubmitting(false);
+ try{
+  if(formData.ticketsBooked === 0 || formData.userName === '' || formData.phoneNumber === ''){
+    setError('Please fill in all required fields and select at least one ticket.');
+    setIsSubmitting(false);
+    return;
+  }
+    const bookingData = await fetch('http://localhost:8080/bookedEvent',{
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        event: event,
+        userId: current_user.id,
+        userName: `${formData.firstName} ${formData.lastName}`,
+        ...formData
+      })
+     
+    })
+    const bookingResponse = await bookingData.json();
+    if(bookingData.ok){
+      setTimeout(() => {
       alert('🎉 Booking confirmed! Check your email for tickets.');
       // Clear the selected event and navigate home
       localStorage.removeItem('selectedEvent');
       navigate('/');
     }, 2000);
+    }
+  } catch (error) {
+    console.error(error.message);
+    setError(error.message);
+    setIsSubmitting(false);
+    return;
+  }
+
+    
   };
 
   const handleBackClick = () => {
@@ -55,7 +112,7 @@ const BookingForm = () => {
 
   if (!event) return null;
 
-  const totalPrice = event.price * formData.tickets;
+  const totalPrice = event.price * formData.ticketsBooked;
   const serviceFee = Math.round(totalPrice * 0.1);
   const finalTotal = totalPrice + serviceFee;
 
@@ -65,13 +122,17 @@ const BookingForm = () => {
         <button className="back-btn" onClick={handleBackClick}>
           ← Back to Event
         </button>
+        {error && <p className="error-message">{error}</p>}
         <h1>Complete Your Booking</h1>
       </div>
-
+    {!current_user && (
+    
+        <p>🔒 Please <button className="login-link" onClick={() => navigate('/login')}>log in</button> to proceed with booking.</p>
+      )}
       <div className="booking-content">
         <div className="booking-main">
           <div className="event-summary">
-            <img src={event.image} alt={event.title} className="summary-image" />
+            <img src={event.imageUrl} alt={event.title} className="summary-image" />
             <div className="summary-details">
               <h3>{event.title}</h3>
               <div className="summary-meta">
@@ -130,10 +191,11 @@ const BookingForm = () => {
                 <input
                   type="tel"
                   id="phone"
-                  name="phone"
-                  value={formData.phone}
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
                   onChange={handleInputChange}
                   placeholder="(555) 123-4567"
+                  required 
                 />
               </div>
             </div>
@@ -148,18 +210,18 @@ const BookingForm = () => {
                     className="ticket-btn"
                     onClick={() => setFormData(prev => ({ 
                       ...prev, 
-                      tickets: Math.max(1, prev.tickets - 1) 
+                      ticketsBooked: Math.max(0, prev.ticketsBooked - 1) 
                     }))}
                   >
                     −
                   </button>
-                  <span className="ticket-count">{formData.tickets}</span>
+                  <span className="ticket-count">{formData.ticketsBooked}</span>
                   <button 
                     type="button" 
                     className="ticket-btn"
                     onClick={() => setFormData(prev => ({ 
                       ...prev, 
-                      tickets: Math.min(10, prev.tickets + 1) 
+                      ticketsBooked: Math.min(ticketQuantity, prev.ticketsBooked + 1) 
                     }))}
                   >
                     +
@@ -175,7 +237,7 @@ const BookingForm = () => {
                 <textarea
                   id="specialRequests"
                   name="specialRequests"
-                  value={formData.specialRequests}
+                  value={formData.specialRequest}
                   onChange={handleInputChange}
                   placeholder="Any dietary restrictions, accessibility needs, or special requests..."
                   rows="4"
@@ -189,7 +251,7 @@ const BookingForm = () => {
           <div className="price-breakdown">
             <h3>💰 Price Breakdown</h3>
             <div className="price-item">
-              <span>Ticket Price (${event.price} × {formData.tickets})</span>
+              <span>Ticket Price (${event.price} × {formData.ticketsBooked})</span>
               <span>${totalPrice}</span>
             </div>
             <div className="price-item">
@@ -209,6 +271,20 @@ const BookingForm = () => {
               <div className="payment-option active">
                 <span>💳 Credit Card</span>
                 <span>Visa, Mastercard, Amex</span>
+                <form>
+            <div>
+              <label>Card Number</label>
+              <input type="text" placeholder="1234 5678 9012 3456" required />
+            </div>
+            <div>
+              <label>Expiry Date</label>
+              <input type="text" placeholder="MM/YY" required />
+            </div>
+            <div>
+              <label>CVV</label>
+              <input type="password" placeholder="123" required />
+            </div>
+          </form>
               </div>
               <div className="payment-option">
                 <span>📱 Digital Wallet</span>
@@ -226,7 +302,7 @@ const BookingForm = () => {
               <li>✅ Customer support 24/7</li>
             </ul>
           </div>
-
+          {current_user && (
           <button 
             type="submit" 
             form="booking-form"
@@ -239,7 +315,7 @@ const BookingForm = () => {
             ) : (
               <span>🎉 Confirm Booking - ${finalTotal}</span>
             )}
-          </button>
+          </button>)}
         </div>
       </div>
     </div>

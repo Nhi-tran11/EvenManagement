@@ -117,3 +117,4 @@ Temporary Items
 # temporary files
 *.tmp
 *.temp
+**/uploads/*

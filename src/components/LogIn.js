@@ -1,12 +1,42 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LogIn.css';
+import { useState } from 'react';
 
 function LogIn() {
     const navigate = useNavigate();
-    const handleSubmit =(e) =>{
+    const [inputs, setInputs] = useState({
+        email: '',
+        password: ''
+    });
+    const [err, setError] = useState(null);
+    const handleSubmit =async (e) =>{
+         
         e.preventDefault();
-        navigate('/');
+        try{
+            const responseData= await fetch('http://localhost:8080/login',{
+                credentials: 'include',
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: inputs.email,
+                    password: inputs.password,
+                })
+            });
+            console.log('Response status:', responseData);
+            const data = await responseData.json();
+            console.log('Response data', data);
+            if (responseData.ok) {
+                // Handle successful login
+            navigate('/');
+            } else {
+                setError(data.message || 'Login failed');
+            }
+        } catch (err) {
+            console.error('Error:', err);
+        }
 
     }
 
@@ -27,6 +57,7 @@ function LogIn() {
                             id="email" 
                             placeholder="Enter your email" 
                             name="email" 
+                            onChange ={e => setInputs({...inputs, email:e.target.value})}
                         />
                     </div>
                     
@@ -38,6 +69,7 @@ function LogIn() {
                             id="pwd" 
                             placeholder="Enter your password" 
                             name="pswd" 
+                            onChange ={e=> setInputs({...inputs, password:e.target.value})}
                         />
                     </div>
                     
@@ -56,7 +88,7 @@ function LogIn() {
                     <button type="submit" onClick={handleSubmit} className="btn-primary">
                         Sign In
                     </button>
-                    
+                    {err && <div className="error-message">{err}</div>}
                     <div className="signup-prompt">
                         <span>Don't have an account? </span>
                         <button 

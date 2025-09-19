@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 function Header ({ onLogoClick })  {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = React.useState(null);
+  // window.dispatchEvent(new CustomEvent('headerReload', { detail: currentUser }));
   const handleonLogoClick = () => {
 
       navigate('/'); // Use the navigation function passed from App component
@@ -16,7 +17,6 @@ function Header ({ onLogoClick })  {
     // For example: navigate('/login') or onLoginClick()
     navigate('/login');
   };
-useEffect(() => {
     const fetchCurrentUser = async() => {
       try {
         const response = await fetch('http://localhost:8080/current_user', {
@@ -34,7 +34,21 @@ useEffect(() => {
         console.error('Error fetching current user:', error);
       }
     };
+useEffect(() => {
+    // Fetch user on mount
     fetchCurrentUser();
+
+    // Listen for login events
+    const handleUserLogin = () => {
+      fetchCurrentUser();
+    };
+
+    window.addEventListener('userLoggedIn', handleUserLogin);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('userLoggedIn', handleUserLogin);
+    };
   }, []);
 const handleLogoutClick = async () => {
     try {
@@ -65,12 +79,13 @@ const handleLogoutClick = async () => {
         </nav>
         <div className="header-actions">
           <button className="search-btn">🔍</button>
-          {currentUser ? (
+          {currentUser !== null && (
             //  If logged in → show logout
             <button className="profile-btn" onClick={handleLogoutClick}>
               <div className="avatar"> Sign Out</div>
             </button>
-          ) : (
+          )}
+          {currentUser === null && (
             // If not logged in → show login
             <button className="profile-btn" onClick={handleLoginClick}>
               <div className="avatar">👤 </div>

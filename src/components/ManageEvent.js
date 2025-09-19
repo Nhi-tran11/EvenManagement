@@ -7,55 +7,123 @@ const ManageEvent = () => {
   const navigate = useNavigate();
   const [eventsData, setEventsData] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [err, setError] = useState(null);
+  const [simplifiedAttendees, setSimplifiedAttendees] = useState([]);
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
     return d.toLocaleDateString();
   };
-useEffect(()=>{
-    const fetchCurrentUser = async() => {
-        try {
-            const response = await fetch('http://localhost:8080/current_user', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setCurrentUser(data);
-            }
-        } catch (error) {
-            console.error('Error fetching current user:', error);
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/current_user', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setCurrentUser(data);
         }
+      } catch (error) {
+        setError(error.message);
+        console.error('Error fetching current user:', error);
+      }
     };
     fetchCurrentUser();
-}, []);
-useEffect(()=>{
-    const fetchBookings = async() =>{
-        try{
-            const EventResponse = await fetch(`http://localhost:8080/event_management?userId=${currentUser.id}`,{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId: currentUser.id
-                })
-            });
-            const EventsData = await EventResponse.json();
-            setEventsData(EventsData);
-            console.log('Events data:', EventsData);
-        } catch (error) {
-            console.error('Error fetching Events:', error);
-        }
+  }, []);
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const EventResponse = await fetch(`http://localhost:8080/event_management?userId=${currentUser.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: currentUser.id
+          })
+        });
+        const EventsData = await EventResponse.json();
+        setEventsData(EventsData);
+        console.log('Events data:', EventsData);
+      } catch (error) {
+        setError(error.message);
+        console.error('Error fetching events data:', error);
+      }
     };
 
     if (currentUser) {
-        fetchBookings();
+      fetchBookings();
     }
-}, [currentUser]);
+  }, [currentUser]);
+  useEffect(() => {
+    const attendeesData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/attendee_information?eventCreatedBy=${currentUser.id}`, {
+          credentials: 'include',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            eventCreatedBy: currentUser.id
+          })
+        });
+        const data = await response.json();
+        console.log('Attendees data:', data);
+        const groupedByEvent = data.reduce((acc, item) => {
+          const eventId = item.event.id;
+
+          if (!acc[eventId]) {
+            acc[eventId] = {
+              eventId: eventId,
+              attendees: []
+            };
+          }
+
+          acc[eventId].attendees.push({
+            phoneNumber: item.phoneNumber,
+            specialRequest: item.specialRequest,
+            ticketsBooked: item.ticketsBooked,
+            userName: item.userName,
+            userId: item.userId
+          });
+
+          return acc;
+        }, {});
+
+        const result = Object.values(groupedByEvent);
+        setSimplifiedAttendees(result);
+        console.log('Simplified Attendees:', result);
+
+      } catch (error) {
+        setError(error.message);
+        console.error('Error fetching attendees data:', error);
+      }
+    };
+    if (currentUser?.id) {
+      attendeesData();
+    }
+  }, [currentUser]);
+  function downloadJSON(filename, jsonData) {
+    // Convert JSON to a string
+    const jsonStr = JSON.stringify(jsonData, null, 2); // pretty print with indentation
+    // Create a blob with the JSON content
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    // Trigger the download
+    link.click();
+    // Release the object URL
+    URL.revokeObjectURL(link.href);
+  }
+
   return (
     <div className="event-grid-container">
       {currentUser === null ? (
@@ -106,19 +174,27 @@ useEffect(()=>{
                       </div>
 
                       <p className="event-description">{event.description}</p>
-                    
-                          <p className="booked-btn">
-                            Number of tickets is Remaining({ticketsRemaining})
-                          </p>
-{/* 
+
+                      <p className="booked-btn">
+                        Number of tickets is Remaining({ticketsRemaining})
+                      </p>
+
                       <div className="booking-info">
-                        <p>
-                          <strong>Booked by:</strong> {event.userName}
-                        </p>
-                        <p>
-                          <strong>Phone:</strong> {event.phoneNumber}
-                        </p>
-                      </div> */}
+                        <button
+                          className="download-btn"
+                          onClick={() => {
+                            const eventAttendees = simplifiedAttendees.find(acc => acc.eventId === event.id);
+                            if (eventAttendees && eventAttendees.attendees.length > 0) {
+                              downloadJSON(`attendees_${event.title.replace(/\s+/g, '_')}.json`, eventAttendees.attendees);
+                            } else {
+                              alert('No attendees data available for this event');
+                            }
+                          }}
+                        >
+                          Download Attendees List ({simplifiedAttendees.find(acc => acc.eventId === event.id)?.attendees?.length || 0})
+                        </button>
+                      </div>
+
                     </div>
                   </div>
                 );

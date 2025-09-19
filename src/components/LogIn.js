@@ -30,6 +30,7 @@ function LogIn() {
             console.log('Response data', data);
             if (responseData.ok) {
                 // Handle successful login
+                window.dispatchEvent(new CustomEvent('userLoggedIn'));
             navigate('/');
             } else {
                 setError(data.message || 'Login failed');

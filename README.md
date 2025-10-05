@@ -1,74 +1,97 @@
-# Demo
+# Event Web - React Frontend
 
-https://github.com/user-attachments/assets/4997dc7a-1d07-4e35-861a-b2ad86cb41be
+This is the frontend for the Event Management web application, built with [Create React App](https://github.com/facebook/create-react-app).
 
-# Getting Started with Create React App
+## Demo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A demo screenshot or video can be added here.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- User authentication (Sign Up, Log In)
+- Event creation and management
+- Booking events
+- View event details
+- Manage your bookings
 
-### `npm start`
+## Getting Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js (v14 or higher recommended)
+- npm
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Nhi-tran11/EvenManagement.git
+   cd my-react-app
+   ```
 
-### `npm run build`
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Running the App
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Start the development server:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# EventLime - Spring Boot Backend
 
-### `npm run eject`
+This is the backend API for the Event Management web application, built with Spring Boot.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Features
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- RESTful API for event management
+- User authentication and authorization
+- Event creation, update, deletion
+- Booking management
+- File upload support
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Prerequisites
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Java 17 or higher
+- Maven
 
-## Learn More
+## Getting Started
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Clone the repository
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+  git clone <https://github.com/Nhi-tran11/eventManament_backend_springboot.git>
+  cd EventLime
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Build the project
 
-### Analyzing the Bundle Size
+```bash
+./mvnw clean install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Run the application
 
-### Making a Progressive Web App
+```bash
+./mvnw spring-boot:run
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+The backend will start at http://localhost:8080.
 
-### Advanced Configuration
+## API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `/api/events` - Manage events
+- `/api/bookings` - Manage bookings
+- `/api/users` - User operations
+- `/api/uploads` - File uploads
 
-### Deployment
+## Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Edit `src/main/resources/application.properties` to configure database and other settings.
 
-### `npm run build` fails to minify
+## Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `src/main/java/com/example/EventLime/controller/` - REST controllers
+- `src/main/java/com/example/EventLime/service/` - Service layer
+- `src/main/java/com/example/EventLime/model/` - Entity models
+- `src/main/resources/` - Configuration files

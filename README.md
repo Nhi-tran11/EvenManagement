@@ -4,7 +4,7 @@ This is the frontend for the Event Management web application, built with [Creat
 
 ## Demo
 
-A demo screenshot or video can be added here.
+https://github.com/user-attachments/assets/4997dc7a-1d07-4e35-861a-b2ad86cb41be
 
 ## Features
 
